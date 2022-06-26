@@ -1,0 +1,209 @@
+/* ****************************************************************************/
+/*	                                                				          */
+/*														                      */
+/*	                The university Database            			                  */
+/*																		      */
+/*	                                            			                  */
+/* ****************************************************************************/
+/* This script creates the university database */
+
+DROP DATABASE university; 
+
+CREATE DATABASE IF NOT EXISTS university;
+
+USE university;
+
+/* drop the tables */
+DROP TABLE IF EXISTS academic_session;
+DROP TABLE IF EXISTS department;
+DROP TABLE IF EXISTS parent_info;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS course;
+DROP TABLE IF EXISTS exam;
+DROP TABLE IF EXISTS faculty;
+DROP TABLE IF EXISTS exam_type;
+DROP TABLE IF EXISTS exam_results;
+DROP TABLE IF EXISTS student_att;
+DROP TABLE IF EXISTS student_course;
+DROP TABLE IF EXISTS faculty_course;
+DROP TABLE IF EXISTS faculty_login;
+
+/* create the tables for the university */
+
+CREATE TABLE IF NOT EXISTS academic_session (
+    session_id INT(3) NOT NULL,
+    session_name VARCHAR(500) NOT NULL,
+    PRIMARY KEY(session_id),
+    UNIQUE(session_name)
+);
+
+/* create department the table */
+CREATE TABLE IF NOT EXISTS department (
+    dept_id INT(3) NOT NULL,
+    dept_name VARCHAR(500) NOT NULL DEFAULT '',
+    head VARCHAR(500) DEFAULT NULL,
+    PRIMARY KEY (dept_id),
+    UNIQUE(dept_name)
+) ; 
+
+/* create the parent_info table */
+CREATE TABLE IF NOT EXISTS parent_info (
+    parent_id INT(3) NOT NULL,
+    parent1_fn VARCHAR(500) NOT NULL,
+    parent1_ln VARCHAR(500) NOT NULL,
+    parent2_fn VARCHAR(500) NOT NULL,
+    parent2_ln VARCHAR(500) NOT NULL,
+    PRIMARY KEY (parent_id)
+);
+ 
+/* create the student table */
+CREATE TABLE IF NOT EXISTS student (
+    student_id INT(3) NOT NULL,
+    first_name VARCHAR(500),
+    last_name VARCHAR(500),
+    reg_year DATE,
+    email NVARCHAR(320),
+    parent_id INT(3) NOT NULL,
+    PRIMARY KEY (student_id ),
+    UNIQUE(email)
+    
+);
+ 
+/* create the course */
+CREATE TABLE IF NOT EXISTS course (
+    course_id INT(3) NOT NULL,
+    course_name VARCHAR(500),
+    session_id INT(3) NOT NULL,
+    dept_id INT(3) NOT NULL,
+    logon_id VARCHAR(50),
+    password VARCHAR(500),
+    building VARCHAR(200),
+    room VARCHAR(200),
+    date_time VARCHAR(50),
+
+    PRIMARY KEY (course_id),
+	FOREIGN KEY (session_id) REFERENCES academic_session(session_id),
+	FOREIGN KEY (dept_id) REFERENCES department(dept_id),
+    UNIQUE(course_name)
+);
+
+ /* create the exam table */
+CREATE TABLE IF NOT EXISTS exam (
+    exam_id INT(3) NOT NULL,
+    start_date DATE,
+    exam_type VARCHAR(3),
+    course_id INT(3) NOT NULL,
+    
+    PRIMARY KEY (exam_id),
+    FOREIGN KEY (course_id) REFERENCES course(course_id)
+
+);
+ 
+/* create the faculty table */
+CREATE TABLE IF NOT EXISTS faculty (
+    faculty_id INT(3) NOT NULL,
+    first_name VARCHAR(500),
+    last_name VARCHAR(500),
+    faculty_email VARCHAR(500) NOT NULL,
+    salary INT(8),
+    insurance VARCHAR(500),
+    hourly_rate INT(3),
+	dept_id INT(3),
+    PRIMARY KEY (faculty_id ),
+    UNIQUE(faculty_email),
+    FOREIGN KEY (dept_id)
+        REFERENCES department(dept_id)
+);
+  
+/* create the exam_type table */ 
+CREATE TABLE IF NOT EXISTS exam_type (
+    exam_type VARCHAR(3) NOT NULL,
+    name VARCHAR(500),
+    description VARCHAR(500),
+    PRIMARY KEY (exam_type)
+		
+    );
+ 
+/* create the exam_result table */    
+CREATE TABLE IF NOT EXISTS exam_result (
+     student_id INT(3) NOT NULL,
+     course_id INT(3) NOT NULL,
+     exam_id INT(3) NOT NULL,
+     exam_grade INT(3),
+	 
+    PRIMARY KEY (student_id, course_id, exam_id),
+    FOREIGN KEY (student_id)
+        REFERENCES student(student_id),
+    FOREIGN KEY (course_id)
+        REFERENCES course(course_id),
+    FOREIGN KEY (exam_id)
+        REFERENCES exam(exam_id)
+);
+
+
+/* create the student_att table */    
+CREATE TABLE IF NOT EXISTS student_att (
+     student_id INT(3) NOT NULL,
+     session_id INT(3) NOT NULL,
+     num_work_days INT(3),
+     num_days_off INT(3),
+     exam_eligibility VARCHAR(50),
+
+      PRIMARY KEY (student_id ,session_id),
+	  FOREIGN KEY (student_id)
+        REFERENCES student(student_id),
+    FOREIGN KEY (session_id )
+        REFERENCES academic_session(session_id)
+  );
+
+
+/* create the student_course table */    
+CREATE TABLE IF NOT EXISTS student_course (
+      student_id INT(3)NOT NULL,
+      course_id INT(3) NOT NULL,
+      grade varchar(1),
+      PRIMARY KEY (student_id ,course_id),
+	  FOREIGN KEY (student_id)
+        REFERENCES student(student_id),
+    FOREIGN KEY (course_id )
+        REFERENCES course(course_id)
+
+  );
+
+/* create the faculty_course table */    
+CREATE TABLE IF NOT EXISTS faculty_course (
+    faculty_id INT(3)NOT NULL,
+    course_id INT(3) NOT NULL,
+    contact_hrs INT(2),
+    PRIMARY KEY (faculty_id ,course_id),
+	FOREIGN KEY (faculty_id)
+        REFERENCES faculty(faculty_id),
+    FOREIGN KEY (course_id )
+        REFERENCES course(course_id)
+
+  );
+
+/* create the faculty_login table */    
+CREATE TABLE IF NOT EXISTS faculty_login (
+    faculty_id int NOT NULL,
+    login_date_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (faculty_id ,login_date_time),
+	FOREIGN KEY (faculty_id)
+        REFERENCES faculty(faculty_id)
+	
+);
+
+
+
+
+ 
+
+      
+
+
+
+     
+
+      
+
