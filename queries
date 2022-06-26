@@ -1,0 +1,127 @@
+/*  krezvani_project_part2.sql 
+    Kimia Rezvani
+    CS 31A, Spring 2022 */
+ 
+/* put the database name into this command */
+
+
+USE university;
+
+/* QUESTION 1. Display the data inserted in the tables created for the University database. */
+
+SELECT* 
+FROM ACADEMIC_SESSION;
+
+
+SELECT* 
+FROM DEPARTMENT;
+
+SELECT* 
+FROM parent_info;
+
+SELECT* 
+FROM student;
+
+
+SELECT* 
+FROM COURSE;
+
+SELECT* 
+FROM faculty;
+
+SELECT* 
+FROM exam_type;
+
+SELECT* 
+FROM exam;
+
+SELECT* 
+FROM exam_result;
+
+SELECT* 
+FROM student_att;
+
+SELECT* 
+FROM student_course;
+
+SELECT* 
+FROM faculty_course;
+
+SELECT* 
+FROM faculty_login;
+
+/* QUESTION 2. Display the different courses offered by the departments in the school. */
+
+SELECT c.course_id, c.course_name, d.dept_name
+FROM course c 
+JOIN department d ON c.dept_id = d.dept_id;
+
+
+
+/* QUESTION 3.  Display the courses offered in the Fall session. */
+
+SELECT c.course_name, a.session_name
+FROM course c
+JOIN academic_session a ON c.session_id = a.session_id
+WHERE a.session_name = "fall session";
+
+
+
+/* QUESTION 4.  Display the course details, 
+the department that offers the courses and students who have enrolled for those courses.*/
+SELECT c.course_name, sc.student_id, d.dept_name
+FROM course c
+JOIN student_course sc ON sc.course_id = c.course_id
+JOIN department d ON c.dept_id = d.dept_id
+JOIN academic_session a ON c.session_id = a.session_id
+WHERE a.session_name = "fall session";
+
+
+
+/* QUESTION 5.  Display the names of the courses, the department that offers those courses,
+ and students who have enrolled for those courses for department 20.*/
+
+SELECT c.course_name, sc.student_id, d.dept_name
+FROM course c
+JOIN student_course sc ON sc.course_id = c.course_id
+JOIN department d ON c.dept_id = d.dept_id
+JOIN academic_session a ON c.session_id = a.session_id
+WHERE a.session_name = "fall session"
+AND d.dept_id = 20;
+
+/* QUESTION 6. Display the details of the exam 
+grades obtained by students who have opted for the course with ID in the range of 190 to 192.*/
+
+SELECT c.course_id, c.course_name, er.exam_grade, er.exam_id
+FROM course c 
+JOIN exam_result er ON c.course_id = er.course_id
+WHERE c.course_id BETWEEN 190 AND 192;
+
+/* QUESTION 7. Retrieve the rows from the EXAM_RESULT table,
+ even if there are no matching records in the COURSE table.*/
+SELECT c.course_id, c.course_name, er.exam_grade, er.exam_id
+FROM course c 
+LEFT JOIN exam_result er ON (c.course_id = er.course_id);
+
+
+/* QUESTION 8. Retrieve the exam grade obtained by each student for every exam attempted.*/
+
+SELECT er.exam_id, er.student_id, er.exam_grade
+FROM exam_result er; 
+
+
+/* QUESTION 9. Write a query to check if a student is eligible to take exams based on the number of class days attended.*/
+
+SELECT sa.student_id, sa.num_work_days, sa.exam_eligibility
+FROM STUDENT_ATT sa
+WHERE exam_eligibility = "y";
+
+
+/* QUESTION 10.  The faculty of the different Departments realized that the exam grades entered in the EXAM_RESULT were showing an increased value of 5 points for each entry. Can you display the exam grades 
+with 5 points subtracted from the marks obtained by each student?*/
+
+
+SELECT er.student_id, (er.exam_grade - 5) AS "new_exam_grade"
+FROM exam_result er
+Order BY (exam_grade);
+
